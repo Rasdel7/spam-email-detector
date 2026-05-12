@@ -85,19 +85,24 @@ plt.tight_layout()
 plt.savefig('confusion_matrix.png')
 print("\nConfusion matrix saved!")
 
-
+# Test with custom messages
 print("\n--- Testing custom messages ---")
 test_messages = [
-    "Congratulations! You won a free iPhone. Click here to claim now!",
+    "Congratulations! You won a free iPhone. Click here!",
     "Hey, are we still meeting for lunch tomorrow?",
     "URGENT: Your bank account has been compromised. Call now!",
     "Can you send me the notes from today's class?"
 ]
 
 best_vectorized = tfidf.transform(test_messages)
-predictions = best_model.predict(best_vectorized)
-for msg, pred in zip(test_messages, predictions):
-    label = "🚨 SPAM" if pred == 1 else "✅ HAM"
-    print(f"{label} → {msg[:60]}...")
+predictions     = best_model.predict(best_vectorized)
+probabilities   = best_model.predict_proba(
+    best_vectorized)
 
-print("\nDone! Check your folder for both charts.")
+for msg, pred, prob in zip(
+    test_messages, predictions, probabilities
+):
+    label      = "🚨 SPAM" if pred == 1 else "✅ HAM"
+    confidence = max(prob) * 100
+    print(f"{label} ({confidence:.1f}%) "
+          f"→ {msg[:55]}...")
